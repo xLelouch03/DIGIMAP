@@ -7744,33 +7744,52 @@ a.anchor-link {
 <div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">image_count</span> <span class="o">=</span> <span class="mi">0</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">combine_augmentations</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">aug_func1</span><span class="p">,</span> <span class="n">aug_func2</span><span class="p">):</span>
+    <span class="c1"># apply the first augmentation</span>
+    <span class="n">img_aug1</span> <span class="o">=</span> <span class="n">aug_func1</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+    <span class="c1"># apply the second augmentation</span>
+    <span class="n">img_aug2</span> <span class="o">=</span> <span class="n">aug_func2</span><span class="p">(</span><span class="n">img_aug1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">img_aug2</span>
+
+<span class="n">image_count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">augmentations</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">random_black_patch</span><span class="p">,</span> <span class="s1">'random_black_patch'</span><span class="p">),</span>
+    <span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">shift_image</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s1">'shift_right_20px'</span><span class="p">),</span>
+    <span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">shift_image</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">20</span><span class="p">),</span> <span class="s1">'shift_up_20px'</span><span class="p">),</span>
+    <span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">rotate_image</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">45</span><span class="p">),</span> <span class="s1">'rotate_45_degrees'</span><span class="p">),</span>
+    <span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">flip_image</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s1">'flip_vertically'</span><span class="p">),</span>
+    <span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">flip_image</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s1">'flip_horizontally'</span><span class="p">),</span>
+<span class="p">]</span>
+
 <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">output_directory</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.jpg'</span><span class="p">):</span>
         <span class="n">img_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
         <span class="n">image</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span>
 
-        <span class="c1"># augmentations with description to include on filenames</span>
-        <span class="n">augmentations</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">(</span><span class="n">random_black_patch</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">()),</span> <span class="s1">'random_black_patch'</span><span class="p">),</span>
-            <span class="p">(</span><span class="n">shift_image</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s1">'shift_right_20px'</span><span class="p">),</span>
-            <span class="p">(</span><span class="n">shift_image</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">20</span><span class="p">),</span> <span class="s1">'shift_up_20px'</span><span class="p">),</span>
-            <span class="p">(</span><span class="n">rotate_image</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="mi">45</span><span class="p">),</span> <span class="s1">'rotate_45_degrees'</span><span class="p">),</span>
-            <span class="p">(</span><span class="n">flip_image</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="mi">0</span><span class="p">),</span> <span class="s1">'flip_vertically'</span><span class="p">),</span>
-            <span class="p">(</span><span class="n">flip_image</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="mi">1</span><span class="p">),</span> <span class="s1">'flip_horizontally'</span><span class="p">),</span>
-        <span class="p">]</span>
-
-        <span class="c1"># saving the augmented images with appropriate filenames</span>
-        <span class="k">for</span> <span class="n">aug_img</span><span class="p">,</span> <span class="n">aug_desc</span> <span class="ow">in</span> <span class="n">augmentations</span><span class="p">:</span>
-            <span class="n">output_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">aug_desc</span><span class="si">}</span><span class="s1">.jpg'</span>
-            <span class="n">cv</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">augmented_output_dir</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">),</span> <span class="n">aug_img</span><span class="p">)</span>
-            <span class="n">image_count</span> <span class="o">+=</span> <span class="mi">1</span>
-
-        <span class="c1"># include the original resized image</span>
+        <span class="c1"># saving the original resized image</span>
         <span class="n">cv</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">augmented_output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">image</span><span class="p">)</span>
         <span class="n">image_count</span> <span class="o">+=</span> <span class="mi">1</span>
 
-    <span class="k">if</span> <span class="n">image_count</span> <span class="o">&gt;=</span> <span class="mi">100</span><span class="p">:</span> <span class="c1"># stop if already reached 100 images</span>
+        <span class="c1"># saving the augmented images </span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">augmentations</span><span class="p">)):</span>
+            <span class="c1"># single augmentations</span>
+            <span class="n">aug_func</span><span class="p">,</span> <span class="n">aug_desc</span> <span class="o">=</span> <span class="n">augmentations</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">output_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">aug_desc</span><span class="si">}</span><span class="s1">.jpg'</span>
+            <span class="n">cv</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">augmented_output_dir</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">),</span> <span class="n">aug_func</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">()))</span>
+            <span class="n">image_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+            <span class="c1"># combine augmentations </span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">augmentations</span><span class="p">)):</span>
+                <span class="n">aug_func2</span><span class="p">,</span> <span class="n">aug_desc2</span> <span class="o">=</span> <span class="n">augmentations</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">combined_image</span> <span class="o">=</span> <span class="n">combine_augmentations</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">aug_func</span><span class="p">,</span> <span class="n">aug_func2</span><span class="p">)</span>
+                <span class="n">output_filename_combined</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">aug_desc</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">aug_desc2</span><span class="si">}</span><span class="s1">.jpg'</span>
+                <span class="n">cv</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">augmented_output_dir</span><span class="p">,</span> <span class="n">output_filename_combined</span><span class="p">),</span> <span class="n">combined_image</span><span class="p">)</span>
+                <span class="n">image_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+            <span class="k">if</span> <span class="n">image_count</span> <span class="o">&gt;=</span> <span class="mi">150</span><span class="p">:</span>  <span class="c1"># stop if already reached 150 images</span>
+                <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">image_count</span> <span class="o">&gt;=</span> <span class="mi">150</span><span class="p">:</span>
         <span class="k">break</span>
 </pre></div>
 </div>
