@@ -18,7 +18,7 @@ model.to(device)
 model.eval()
 
 # Class names
-class_names = ["dog", "horse", "elephant", "butterfly", "chicken", "cat", "cow", "sheep", "spider","squirrel"]
+class_names = ["dog", "horse", "elephant", "butterfly", "chicken", "cat", "cow", "sheep", "spider", "squirrel"]
 
 # Image transforms
 transform = transforms.Compose([
@@ -46,7 +46,7 @@ def open_file():
 
         # Classify the image
         label = classify_image(file_path)
-        result_label.config(text=f"Predicted: ")
+        result_label.config(text=f"Predicted: {label}")
 
 # GUI setup
 root = tk.Tk()
