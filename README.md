@@ -23,7 +23,7 @@ This application is a simple **image classification tool** built using **PyTorch
 
 ## How It Works
 
-- **Image Upload**: Users can upload an image via a file dialog.
+- **Image Upload**: An image can be uploaded via a file dialog.
 - **Preprocessing and Augmentation**: The uploaded image is preprocessed with the following enhancements:
   - Contrast enhancement using histogram equalization in HSV color space.
   - Sharpening the image to enhance its details.
