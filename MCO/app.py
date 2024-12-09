@@ -6,6 +6,7 @@ from torchvision import transforms
 from torchvision.models import efficientnet_b0
 import cv2 as cv
 import numpy as np
+import random 
 
 # Load the model for classification
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -25,15 +26,44 @@ transform = transforms.Compose([
     transforms.ToTensor()
 ])
 
-# Function to preprocess the image
+def random_black_patch(img):
+    h, w, _ = img.shape
+    patch_size = np.random.randint(10, 30) # randomly selects the size of the black patch, currently set between 10 to 30 pixels
+    x1 = np.random.randint(0, w - patch_size) 
+    y1 = np.random.randint(0, h - patch_size)
+    img[y1:y1+patch_size, x1:x1+patch_size] = 0 # sets the pixels in the selected area to black
+    return img
+
+def shift_image(img, shift_x, shift_y):
+    h, w = img.shape[:2]
+    
+    # creates a transformation matrix for shifting
+    # [1, 0, shift_x] shifts the image by 'shift_x' pixels horizontally
+    # [0, 1, shift_y] shifts the image by 'shift_y' pixels vertically
+    M = np.float32([[1, 0, shift_x], [0, 1, shift_y]]) 
+    shifted_img = cv.warpAffine(img, M, (w, h)) # apply the shifting using the affine transformation
+    return shifted_img
+
+def rotate_image(img, angle):
+    h, w = img.shape[:2]
+    center = (w // 2, h // 2) # determines the center of the image
+    M = cv.getRotationMatrix2D(center, angle, 1.0) # positive angle -> counter clockwise rotation, negative angle -> clockwise rotation
+    rotated_img = cv.warpAffine(img, M, (w, h)) # apply the rotation using the affine transformation
+    return rotated_img
+
+def flip_image(image, value):
+    return cv.flip(image, value)  # 0 -> vertical, 1 -> horizontal
+
+# Function to preprocess the image and apply data augmentation
 def preprocess_image(img_path):
     """
     Preprocesses the input image by applying enhancements and augmentations.
     Steps:
         1. Load the image and convert it to RGB.
-        2. Enhance contrast using histogram equalization in HSV space.
-        3. Apply sharpening to improve details.
-        4. Normalize and add noise for robustness.
+        2. Apply random data augmentations (black patch, shift, rotate, flip).
+        3. Enhance contrast using histogram equalization in HSV space.
+        4. Apply sharpening to improve details.
+        5. Normalize and add noise for robustness.
     Args:
         img_path (str): Path to the input image file.
     Returns:
@@ -42,6 +72,23 @@ def preprocess_image(img_path):
     """
     img = Image.open(img_path).convert("RGB")
     img_np = np.array(img)
+
+    # Apply random data augmentations
+    if random.random() < 0.5:  # Randomly apply a black patch
+        img_np = random_black_patch(img_np)
+    
+    if random.random() < 0.5:  # Randomly apply a horizontal shift
+        shift_x = np.random.randint(-10, 10)
+        shift_y = np.random.randint(-10, 10)
+        img_np = shift_image(img_np, shift_x, shift_y)
+    
+    if random.random() < 0.5:  # Randomly rotate the image
+        angle = np.random.randint(-15, 15)
+        img_np = rotate_image(img_np, angle)
+    
+    if random.random() < 0.5:  # Randomly flip the image horizontally or vertically
+        flip_value = random.choice([0, 1])
+        img_np = flip_image(img_np, flip_value)
 
     # Enhance contrast using histogram equalization in HSV
     img_hsv = cv.cvtColor(img_np, cv.COLOR_RGB2HSV)  # Convert to HSV color space
