@@ -20,15 +20,29 @@ This application is a simple **image classification tool** built using **PyTorch
 ## Features
 
 - **Image Classification**: Uses a pretrained EfficientNet-B0 model to predict the animal class in uploaded images.
-- **Data Augmentation**: Applies various image enhancement techniques like contrast enhancement (via histogram equalization in HSV space) and sharpening to improve the image quality before classification.
+- **Data Augmentation**: Applies various image enhancement techniques to improve the image quality before classification:
+  - **Contrast Enhancement**: Using histogram equalization in HSV space to improve the image's contrast.
+  - **Sharpening**: Enhancing image details by sharpening the image.
+  - **Random Shifting**: Randomly shifting the image horizontally or vertically.
+  - **Rotation**: Randomly rotating the image to account for different orientations.
+  - **Flipping**: Randomly flipping the image horizontally or vertically.
+  - **Black Patch Addition**: Introducing random black patches to simulate occlusions or image corruption.
+  
+These augmentations help provide a more robust input for classification by simulating different conditions that the model might encounter in real-world scenarios.
+
 - **GUI**: Built with Tkinter, providing an intuitive interface for users to upload images and view predictions.
 
 ## How It Works
 
-- **Image Upload**: An image can be uploaded via a file dialog.
-- **Preprocessing and Augmentation**: The uploaded image is preprocessed with the following enhancements:
-  - Contrast enhancement using histogram equalization in HSV color space.
-  - Sharpening the image to enhance its details.
-- **Classification**: The image is then passed through a pretrained EfficientNet-B0 model to classify the animal present in the image.
-- **Result**: The predicted animal class is displayed below the image.
+1. **Image Upload**: An image can be uploaded via a file dialog.
+2. **Preprocessing and Augmentation**: The uploaded image undergoes preprocessing and data augmentation:
+   - **Histogram Equalization**: The image's contrast is enhanced by equalizing the histogram in the HSV color space, focusing on the brightness (value) channel.
+   - **Sharpening**: The image is sharpened using a factor of 2.0 to enhance fine details.
+   - **Random Data Augmentation**: Several random augmentations are applied:
+     - **Random Shifting**: The image is randomly shifted horizontally or vertically by a random number of pixels.
+     - **Random Rotation**: The image is rotated by a random angle (between -20° and 20°).
+     - **Random Flipping**: The image is flipped either horizontally or vertically.
+     - **Random Black Patch**: A black patch of random size is applied to a random location in the image to simulate occlusion.
+3. **Classification**: The augmented image is then passed through the pretrained EfficientNet-B0 model to classify the animal.
+4. **Result**: The predicted animal class (e.g., "dog," "cat," "elephant") is displayed below the image.
 
