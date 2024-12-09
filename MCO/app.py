@@ -110,6 +110,7 @@ root = tk.Tk()
 root.title("Animal Classifier with Augmented Image Processing")
 
 image_frame = tk.Frame(root)
+image_frame.pack(pady=20)
 
 original_img_label = Label(image_frame)
 original_img_label.grid(row=0, column=0, padx=10)  
@@ -121,7 +122,7 @@ original_img_label_text = Label(image_frame, text="Original Image", font=("Helve
 augmented_img_label_text = Label(image_frame, text="Augmented Image", font=("Helvetica", 10))
 
 result_label = Label(root, text="Upload an image to classify!", font=("Helvetica", 14))
-result_label.pack(pady=20)  #
+result_label.pack(pady=20)  
 
 upload_btn = Button(root, text="Upload Image", command=open_file)
 upload_btn.pack()
